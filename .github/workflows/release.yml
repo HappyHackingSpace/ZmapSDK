@@ -23,6 +23,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install build twine
 
+      - name: Get package version
+        id: get_version
+        run: |
+          VERSION=$(python setup.py --version)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Package version: $VERSION"
+
       - name: Build package
         run: python -m build
         
@@ -32,20 +39,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
+          tag_name: v${{ env.VERSION }}
+          release_name: Release v${{ env.VERSION }}
           draft: false
           prerelease: false
           
-      - name: Upload Release Assets
+      - name: Upload Wheel
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/*
-          asset_name: package
-          asset_content_type: application/zip
+          asset_path: ./dist/zmapsdk-${{ env.VERSION }}-py3-none-any.whl
+          asset_name: zmapsdk-${{ env.VERSION }}-py3-none-any.whl
+          asset_content_type: application/octet-stream
+          
+      - name: Upload Source
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/zmapsdk-${{ env.VERSION }}.tar.gz
+          asset_name: zmapsdk-${{ env.VERSION }}.tar.gz
+          asset_content_type: application/gzip
           
       - name: Publish to PyPI
         env:
