@@ -12,7 +12,7 @@ from .parser import ZMapParser
 from .api import APIServer
 from .cli import main as cli_main
 
-__version__ = "0.2.0"
+__version__ = "0.1.2"
 __all__ = [
     "ZMap", 
     "ZMapError", 

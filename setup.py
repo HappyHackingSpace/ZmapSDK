@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="zmapsdk",
-    version="0.2.0",
+    version="0.1.2",
     description="Python SDK for the ZMap network scanner with REST API",
     author="ZMap Team",
     author_email="info@zmap.io",
