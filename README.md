@@ -50,7 +50,7 @@ The ZMap SDK consists of several core components:
 
 - **ZMap**: The main class that provides the interface to ZMap
 - **ZMapScanConfig**: Handles scan configuration parameters
-- **ZMapInput**: Manages input sources (subnets, whitelists, blacklists)
+- **ZMapInput**: Manages input sources (subnets, allowlists, blocklists)
 - **ZMapOutput**: Controls output formatting and destinations
 - **ZMapRunner**: Executes ZMap commands and captures results
 - **ZMapParser**: Parses ZMap output into structured data
@@ -113,29 +113,29 @@ results = zmap.scan(
 )
 ```
 
-### Using Blacklists and Whitelists
+### Using Blocklists and Allowlists
 
 ```python
 from zmapsdk import ZMap
 
 zmap = ZMap()
 
-# Using a blacklist file
-zmap.blacklist_from_file("/path/to/blacklist.txt")
+# Using a blocklist file
+zmap.blocklist_from_file("/path/to/blocklist.txt")
 
-# Creating a blacklist file
-zmap.create_blacklist_file(
+# Creating a blocklist file
+zmap.create_blocklist_file(
     subnets=["10.0.0.0/8", "192.168.0.0/16"],
     output_file="private_ranges.conf"
 )
 
-# Using a whitelist file
-zmap.whitelist_from_file("/path/to/whitelist.txt")
+# Using a allowlist file
+zmap.allowlist_from_file("/path/to/allowlist.txt")
 
-# Run scan with blacklist
+# Run scan with blocklist
 results = zmap.scan(
     target_port=443,
-    blacklist_file="private_ranges.conf"
+    blocklist_file="private_ranges.conf"
 )
 ```
 
@@ -240,12 +240,12 @@ The main interface for the ZMap SDK.
 - `get_output_fields(probe_module)`: Get list of available output fields
 - `get_interfaces()`: Get list of available network interfaces
 - `get_version()`: Get ZMap version
-- `blacklist_from_file(blacklist_file)`: Validate and use a blacklist file
-- `whitelist_from_file(whitelist_file)`: Validate and use a whitelist file
-- `create_blacklist_file(subnets, output_file)`: Create a blacklist file
-- `create_whitelist_file(subnets, output_file)`: Create a whitelist file
+- `blocklist_from_file(blocklist_file)`: Validate and use a blocklist file
+- `allowlist_from_file(allowlist_file)`: Validate and use a allowlist file
+- `create_blocklist_file(subnets, output_file)`: Create a blocklist file
+- `create_allowlist_file(subnets, output_file)`: Create a allowlist file
 - `create_target_file(targets, output_file)`: Create a file with target IPs
-- `generate_standard_blacklist(output_file)`: Generate standard blacklist
+- `generate_standard_blocklist(output_file)`: Generate standard blocklist
 - `parse_results(file_path, fields)`: Parse scan results into structured data
 - `parse_metadata(file_path)`: Parse scan metadata
 - `extract_ips(results, ip_field)`: Extract IPs from results
@@ -285,7 +285,7 @@ Handles configuration for ZMap scans.
 - **Advanced Options**:
   - `sender_threads`: Threads used to send packets
   - `cores`: Comma-separated list of cores to pin to
-  - `ignore_invalid_hosts`: Ignore invalid hosts in whitelist/blacklist file
+  - `ignore_invalid_hosts`: Ignore invalid hosts in allowlist/blocklist file
   - `max_sendto_failures`: Maximum NIC sendto failures before scan is aborted
   - `min_hitrate`: Minimum hitrate that scan can hit before scan is aborted
 

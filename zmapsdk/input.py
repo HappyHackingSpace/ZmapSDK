@@ -11,16 +11,16 @@ from .exceptions import ZMapInputError
 
 class ZMapInput:
     """
-    Class for handling ZMap input options like target lists, blacklists, and whitelists
+    Class for handling ZMap input options like target lists, blocklists, and allowlists
     """
     
     def __init__(self):
         """Initialize the input handler"""
-        self.blacklist_file: Optional[str] = None
-        self.whitelist_file: Optional[str] = None
+        self.blocklist_file: Optional[str] = None
+        self.allowlist_file: Optional[str] = None
         self.input_file: Optional[str] = None
         self.target_subnets: List[str] = []
-        self.ignore_blacklist: bool = False
+        self.ignore_blocklist: bool = False
         self.ignore_invalid_hosts: bool = False
         
     def add_subnet(self, subnet: str) -> None:
@@ -52,37 +52,37 @@ class ZMapInput:
         for subnet in subnets:
             self.add_subnet(subnet)
     
-    def set_blacklist_file(self, file_path: str) -> None:
+    def set_blocklist_file(self, file_path: str) -> None:
         """
-        Set the blacklist file
+        Set the blocklist file
         
         Args:
-            file_path: Path to the blacklist file
+            file_path: Path to the blocklist file
             
         Raises:
             ZMapInputError: If the file doesn't exist or isn't readable
         """
         if not os.path.isfile(file_path):
-            raise ZMapInputError(f"Blacklist file not found: {file_path}")
+            raise ZMapInputError(f"Blocklist file not found: {file_path}")
         if not os.access(file_path, os.R_OK):
-            raise ZMapInputError(f"Blacklist file not readable: {file_path}")
-        self.blacklist_file = file_path
+            raise ZMapInputError(f"Blocklist file not readable: {file_path}")
+        self.blocklist_file = file_path
     
-    def set_whitelist_file(self, file_path: str) -> None:
+    def set_allowlist_file(self, file_path: str) -> None:
         """
-        Set the whitelist file
+        Set the allowlist file
         
         Args:
-            file_path: Path to the whitelist file
+            file_path: Path to the allowlist file
             
         Raises:
             ZMapInputError: If the file doesn't exist or isn't readable
         """
         if not os.path.isfile(file_path):
-            raise ZMapInputError(f"Whitelist file not found: {file_path}")
+            raise ZMapInputError(f"Allowlist file not found: {file_path}")
         if not os.access(file_path, os.R_OK):
-            raise ZMapInputError(f"Whitelist file not readable: {file_path}")
-        self.whitelist_file = file_path
+            raise ZMapInputError(f"Allowlist file not readable: {file_path}")
+        self.allowlist_file = file_path
     
     def set_input_file(self, file_path: str) -> None:
         """
@@ -100,16 +100,16 @@ class ZMapInput:
             raise ZMapInputError(f"Input file not readable: {file_path}")
         self.input_file = file_path
     
-    def create_blacklist_file(self, subnets: List[str], output_file: str) -> str:
+    def create_blocklist_file(self, subnets: List[str], output_file: str) -> str:
         """
-        Create a blacklist file from a list of subnets
+        Create a blocklist file from a list of subnets
         
         Args:
-            subnets: List of subnet CIDRs to blacklist
-            output_file: Path to save the blacklist file
+            subnets: List of subnet CIDRs to blocklist
+            output_file: Path to save the blocklist file
             
         Returns:
-            Path to the created blacklist file
+            Path to the created blocklist file
             
         Raises:
             ZMapInputError: If a subnet is invalid or file can't be created
@@ -119,28 +119,28 @@ class ZMapInput:
             try:
                 ipaddress.ip_network(subnet)
             except ValueError as e:
-                raise ZMapInputError(f"Invalid subnet in blacklist: {subnet} - {str(e)}")
+                raise ZMapInputError(f"Invalid subnet in blocklist: {subnet} - {str(e)}")
         
         # Write to file
         try:
             with open(output_file, 'w') as f:
                 f.write('\n'.join(subnets))
         except IOError as e:
-            raise ZMapInputError(f"Failed to create blacklist file: {str(e)}")
+            raise ZMapInputError(f"Failed to create blocklist file: {str(e)}")
             
-        self.blacklist_file = output_file
+        self.blocklist_file = output_file
         return output_file
     
-    def create_whitelist_file(self, subnets: List[str], output_file: str) -> str:
+    def create_allowlist_file(self, subnets: List[str], output_file: str) -> str:
         """
-        Create a whitelist file from a list of subnets
+        Create a allowlist file from a list of subnets
         
         Args:
-            subnets: List of subnet CIDRs to whitelist
-            output_file: Path to save the whitelist file
+            subnets: List of subnet CIDRs to allowlist
+            output_file: Path to save the allowlist file
             
         Returns:
-            Path to the created whitelist file
+            Path to the created allowlist file
             
         Raises:
             ZMapInputError: If a subnet is invalid or file can't be created
@@ -150,16 +150,16 @@ class ZMapInput:
             try:
                 ipaddress.ip_network(subnet)
             except ValueError as e:
-                raise ZMapInputError(f"Invalid subnet in whitelist: {subnet} - {str(e)}")
+                raise ZMapInputError(f"Invalid subnet in allowlist: {subnet} - {str(e)}")
         
         # Write to file
         try:
             with open(output_file, 'w') as f:
                 f.write('\n'.join(subnets))
         except IOError as e:
-            raise ZMapInputError(f"Failed to create whitelist file: {str(e)}")
+            raise ZMapInputError(f"Failed to create allowlist file: {str(e)}")
             
-        self.whitelist_file = output_file
+        self.allowlist_file = output_file
         return output_file
 
     def create_target_file(self, targets: List[str], output_file: str) -> str:
@@ -193,15 +193,15 @@ class ZMapInput:
         self.input_file = output_file
         return output_file
     
-    def generate_standard_blacklist(self, output_file: str) -> str:
+    def generate_standard_blocklist(self, output_file: str) -> str:
         """
-        Generate a blacklist file with standard private network ranges
+        Generate a blocklist file with standard private network ranges
         
         Args:
-            output_file: Path to save the blacklist file
+            output_file: Path to save the blocklist file
             
         Returns:
-            Path to the created blacklist file
+            Path to the created blocklist file
         """
         private_ranges = [
             "10.0.0.0/8",      # RFC1918 private network
@@ -216,23 +216,23 @@ class ZMapInput:
             "203.0.113.0/24",  # TEST-NET-3 for documentation
         ]
         
-        return self.create_blacklist_file(private_ranges, output_file)
+        return self.create_blocklist_file(private_ranges, output_file)
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert input configuration to a dictionary for command-line options"""
         result = {}
         
-        if self.blacklist_file:
-            result["blacklist_file"] = self.blacklist_file
+        if self.blocklist_file:
+            result["blocklist_file"] = self.blocklist_file
         
-        if self.whitelist_file:
-            result["whitelist_file"] = self.whitelist_file
+        if self.allowlist_file:
+            result["allowlist_file"] = self.allowlist_file
             
         if self.input_file:
             result["input_file"] = self.input_file
             
-        if self.ignore_blacklist:
-            result["ignore_blacklist"] = True
+        if self.ignore_blocklist:
+            result["ignore_blocklist"] = True
             
         if self.ignore_invalid_hosts:
             result["ignore_invalid_hosts"] = True
