@@ -70,7 +70,7 @@ class ZMap:
         # Process other parameters and assign them to the appropriate config object
         for key, value in kwargs.items():
             # Input options
-            if key in ['blacklist_file', 'whitelist_file', 'input_file', 'ignore_blacklist', 'ignore_invalid_hosts']:
+            if key in ['blocklist_file', 'allowlist_file', 'input_file', 'ignore_blocklist', 'ignore_invalid_hosts']:
                 setattr(scan_input, key, value)
             # Output options
             elif key in ['output_fields', 'output_module', 'output_filter', 'output_args',
@@ -149,49 +149,49 @@ class ZMap:
         """
         return self.runner.get_version()
     
-    def blacklist_from_file(self, blacklist_file: str) -> None:
+    def blocklist_from_file(self, blocklist_file: str) -> None:
         """
-        Validate and use a blacklist file
+        Validate and use a blocklist file
         
         Args:
-            blacklist_file: Path to the blacklist file
+            blocklist_file: Path to the blocklist file
         """
-        self.input.set_blacklist_file(blacklist_file)
+        self.input.set_blocklist_file(blocklist_file)
 
-    def whitelist_from_file(self, whitelist_file: str) -> None:
+    def allowlist_from_file(self, allowlist_file: str) -> None:
         """
-        Validate and use a whitelist file
+        Validate and use a allowlist file
         
         Args:
-            whitelist_file: Path to the whitelist file
+            allowlist_file: Path to the allowlist file
         """
-        self.input.set_whitelist_file(whitelist_file)
+        self.input.set_allowlist_file(allowlist_file)
 
-    def create_blacklist_file(self, subnets: List[str], output_file: str) -> str:
+    def create_blocklist_file(self, subnets: List[str], output_file: str) -> str:
         """
-        Create a blacklist file from a list of subnets
+        Create a blocklist file from a list of subnets
         
         Args:
-            subnets: List of subnet CIDRs to blacklist
-            output_file: Path to save the blacklist file
+            subnets: List of subnet CIDRs to blocklist
+            output_file: Path to save the blocklist file
             
         Returns:
-            Path to the created blacklist file
+            Path to the created blocklist file
         """
-        return self.input.create_blacklist_file(subnets, output_file)
+        return self.input.create_blocklist_file(subnets, output_file)
 
-    def create_whitelist_file(self, subnets: List[str], output_file: str) -> str:
+    def create_allowlist_file(self, subnets: List[str], output_file: str) -> str:
         """
-        Create a whitelist file from a list of subnets
+        Create a allowlist file from a list of subnets
         
         Args:
-            subnets: List of subnet CIDRs to whitelist
-            output_file: Path to save the whitelist file
+            subnets: List of subnet CIDRs to allowlist
+            output_file: Path to save the allowlist file
             
         Returns:
-            Path to the created whitelist file
+            Path to the created allowlist file
         """
-        return self.input.create_whitelist_file(subnets, output_file)
+        return self.input.create_allowlist_file(subnets, output_file)
         
     def create_target_file(self, targets: List[str], output_file: str) -> str:
         """
@@ -206,17 +206,17 @@ class ZMap:
         """
         return self.input.create_target_file(targets, output_file)
     
-    def generate_standard_blacklist(self, output_file: str) -> str:
+    def generate_standard_blocklist(self, output_file: str) -> str:
         """
-        Generate a blacklist file with standard private network ranges
+        Generate a blocklist file with standard private network ranges
         
         Args:
-            output_file: Path to save the blacklist file
+            output_file: Path to save the blocklist file
             
         Returns:
-            Path to the created blacklist file
+            Path to the created blocklist file
         """
-        return self.input.generate_standard_blacklist(output_file)
+        return self.input.generate_standard_blocklist(output_file)
     
     def parse_results(self, file_path: str, fields: Optional[List[str]] = None) -> List[Dict[str, str]]:
         """

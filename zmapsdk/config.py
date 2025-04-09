@@ -37,7 +37,7 @@ class ZMapScanConfig:
         shard: Set which shard this scan is (0 indexed)
         sender_threads: Threads used to send packets
         cores: Comma-separated list of cores to pin to
-        ignore_invalid_hosts: Ignore invalid hosts in whitelist/blacklist file
+        ignore_invalid_hosts: Ignore invalid hosts in allowlist/blocklist file
         max_sendto_failures: Maximum NIC sendto failures before scan is aborted
         min_hitrate: Minimum hitrate that scan can hit before scan is aborted
         notes: Inject user-specified notes into scan metadata

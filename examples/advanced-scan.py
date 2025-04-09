@@ -16,7 +16,7 @@ zmap.config = config
 result = zmap.scan(
     subnets=[
         "192.168.1.0/24",
-        "191.168.2.0/24",
+        "192.168.2.0/24",
     ],
     output_file="scan_results.csv",
     output_fields=["saddr", "daddr", "sport", "dport", "seqnum", "timestamp"]

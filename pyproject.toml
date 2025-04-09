@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Python SDK for the ZMap network scanner"
 readme = "README.md"
 authors = [
-    {name = "Atilla", email = "attilla@tuta.io"}
+    {name = "Happy Hacking Space", email = "contact@happyhacking.space"}
 ]
 license = "MIT"
 classifiers = [
