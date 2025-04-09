@@ -9,6 +9,8 @@ from .input import ZMapInput
 from .output import ZMapOutput
 from .runner import ZMapRunner
 from .parser import ZMapParser
+from .api import APIServer
+from .cli import main as cli_main
 
 __version__ = "0.2.0"
 __all__ = [
@@ -23,5 +25,7 @@ __all__ = [
     "ZMapInput", 
     "ZMapOutput",
     "ZMapRunner",
-    "ZMapParser"
+    "ZMapParser",
+    "APIServer",
+    "cli_main"
 ] 

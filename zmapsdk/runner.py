@@ -339,26 +339,57 @@ class ZMapRunner:
         Returns:
             List of available interface names
         """
-        returncode, stdout, stderr = self.run_command(list_interfaces=True)
-        if returncode != 0:
-            raise ZMapCommandError(
-                command=f"{self.zmap_path} --list-interfaces",
-                returncode=returncode,
-                stderr=stderr
-            )
-        
-        # Parse output to extract interface names
-        interfaces = []
-        for line in stdout.splitlines():
-            line = line.strip()
-            if not line or line.startswith("Available"):
-                continue
-            # Typically the output has name then description, split on first space
-            parts = line.split(None, 1)
-            if parts:
-                interfaces.append(parts[0])
-        
-        return interfaces
+        try:
+            # Using netifaces if available
+            import netifaces
+            return netifaces.interfaces()
+        except ImportError:
+            # Fallback to socket for basic interface detection
+            import socket
+            import subprocess
+            import platform
+            
+            os_name = platform.system().lower()
+            interfaces = []
+            
+            # Get interfaces based on the operating system
+            if os_name == "linux" or os_name == "darwin":
+                # Use ifconfig on Unix-like systems
+                try:
+                    proc = subprocess.run(["ifconfig", "-a"], 
+                                         stdout=subprocess.PIPE, 
+                                         stderr=subprocess.PIPE, 
+                                         text=True)
+                    if proc.returncode == 0:
+                        for line in proc.stdout.splitlines():
+                            if ": " in line:
+                                # Extract interface name (like eth0, wlan0, etc.)
+                                interfaces.append(line.split(": ")[0])
+                except (subprocess.SubprocessError, FileNotFoundError):
+                    pass
+            elif os_name == "windows":
+                # Use ipconfig on Windows
+                try:
+                    proc = subprocess.run(["ipconfig"], 
+                                         stdout=subprocess.PIPE, 
+                                         stderr=subprocess.PIPE, 
+                                         text=True)
+                    if proc.returncode == 0:
+                        for line in proc.stdout.splitlines():
+                            if "adapter" in line.lower():
+                                # Extract adapter name
+                                adapter_name = line.split(":", 1)[0].strip()
+                                if adapter_name:
+                                    interfaces.append(adapter_name)
+                except (subprocess.SubprocessError, FileNotFoundError):
+                    pass
+            
+            # If we still don't have interfaces, try to get the hostname
+            if not interfaces:
+                # At minimum, return the hostname interface
+                interfaces.append(socket.gethostname())
+                
+            return interfaces
     
     def get_version(self) -> str:
         """
