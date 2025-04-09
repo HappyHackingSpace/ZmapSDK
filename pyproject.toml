@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zmapsdk"
+version = "0.1.0"
+description = "Python SDK for the ZMap network scanner"
+readme = "README.md"
+authors = [
+    {name = "Atilla", email = "attilla@tuta.io"}
+]
+license = "MIT"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators", 
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: System :: Networking",
+    "Topic :: Security",
+]
+requires-python = ">=3.6"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/HappyHackingSpace/ZmapSDK" 
