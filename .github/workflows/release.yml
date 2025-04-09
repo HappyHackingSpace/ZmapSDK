@@ -26,7 +26,7 @@ jobs:
       - name: Get package version
         id: get_version
         run: |
-          VERSION=$(python setup.py --version)
+          VERSION=$(grep -m1 'version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Package version: $VERSION"
 
