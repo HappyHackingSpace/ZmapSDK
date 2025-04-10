@@ -5,33 +5,42 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="zmapsdk",
-    version="0.1.0",
-    author="Atilla",
-    author_email="attilla@tuta.io",
-    description="Python SDK for the ZMap network scanner",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/atiilla/zmapsdk",
+    version="0.1.2",
+    description="Python SDK for the ZMap network scanner with REST API",
+    author="ZMap Team",
+    author_email="info@zmap.io",
+    url="https://github.com/zmap/zmapsdk",
     packages=find_packages(),
+    install_requires=[
+        "pydantic>=1.8.0,<2.0.0",  # For data validation
+        "fastapi>=0.68.0",         # For REST API
+        "uvicorn>=0.15.0",         # For serving the API
+    ],
+    extras_require={
+        "dev": [
+            "pytest>=6.0.0",
+            "black>=21.5b2",
+            "isort>=5.9.1",
+            "mypy>=0.812",
+        ],
+    },
+    entry_points={
+        "console_scripts": [
+            "zmapsdk=zmapsdk.cli:main",
+        ],
+    },
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "Intended Audience :: System Administrators",
-        "Intended Audience :: Information Technology",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12", 
-        "Programming Language :: Python :: 3.13",
-        "Operating System :: POSIX :: Linux",
-        "Topic :: System :: Networking",
+        "Topic :: Internet",
         "Topic :: Security",
+        "Topic :: System :: Networking",
     ],
-    python_requires=">=3.6",
-    install_requires=[],
+    python_requires=">=3.7",
 ) 
