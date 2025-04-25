@@ -2,15 +2,13 @@
 Runner module for ZMap SDK
 """
 
-import subprocess
-import json
 import os
+import subprocess
 import tempfile
-import time
-from typing import List, Dict, Any, Optional, Union, Tuple, Callable
+from collections.abc import Callable
 
-from .exceptions import ZMapCommandError
 from .config import ZMapScanConfig
+from .exceptions import ZMapCommandError
 from .input import ZMapInput
 from .output import ZMapOutput
 
@@ -19,47 +17,48 @@ class ZMapRunner:
     """
     Class for running ZMap commands
     """
-    
+
     def __init__(self, zmap_path: str = "zmap"):
         """
         Initialize the ZMap runner
-        
+
         Args:
             zmap_path: Path to the zmap executable (defaults to "zmap", assuming it's in PATH)
         """
         self.zmap_path = zmap_path
         self._check_zmap_exists()
-    
+
     def _check_zmap_exists(self) -> None:
         """Check if zmap executable exists and is accessible"""
         try:
-            subprocess.run([self.zmap_path, "--version"], 
-                          stdout=subprocess.PIPE, 
-                          stderr=subprocess.PIPE, 
-                          check=True)
+            subprocess.run(
+                [self.zmap_path, "--version"],
+                capture_output=True,
+                check=True,
+            )
         except (subprocess.SubprocessError, FileNotFoundError) as e:
             raise ZMapCommandError(command=self.zmap_path, returncode=-1, stderr=str(e))
-    
-    def _build_command(self, **kwargs) -> List[str]:
+
+    def _build_command(self, **kwargs) -> list[str]:
         """
         Build zmap command from parameters
-        
+
         Args:
             **kwargs: Command-line options as keyword arguments
-            
+
         Returns:
             List of command parts
         """
         cmd = [self.zmap_path]
-        
+
         # Process all the parameters
         for key, value in kwargs.items():
             if value is None:
                 continue
-                
+
             # Convert underscores to hyphens for flags
-            key = key.replace('_', '-')
-            
+            key = key.replace("_", "-")
+
             # Boolean flags
             if isinstance(value, bool):
                 if value:
@@ -73,19 +72,21 @@ class ZMapRunner:
             # All other parameters
             else:
                 cmd.append(f"--{key}={value}")
-        
+
         return cmd
-    
-    def run_command(self, 
-                   config: Optional[ZMapScanConfig] = None,
-                   input_config: Optional[ZMapInput] = None,
-                   output_config: Optional[ZMapOutput] = None,
-                   capture_output: bool = True,
-                   callback: Optional[Callable[[str], None]] = None,
-                   **kwargs) -> Tuple[int, str, str]:
+
+    def run_command(
+        self,
+        config: ZMapScanConfig | None = None,
+        input_config: ZMapInput | None = None,
+        output_config: ZMapOutput | None = None,
+        capture_output: bool = True,
+        callback: Callable[[str], None] | None = None,
+        **kwargs,
+    ) -> tuple[int, str, str]:
         """
         Run a ZMap command with the specified parameters
-        
+
         Args:
             config: Configuration object
             input_config: Input configuration object
@@ -93,31 +94,31 @@ class ZMapRunner:
             capture_output: Whether to capture and return command output
             callback: Optional callback function for real-time output
             **kwargs: Additional parameters to pass to zmap
-            
+
         Returns:
             Tuple of (return code, stdout, stderr)
         """
         # Combine all parameters
         combined_params = {}
-        
+
         # Add config parameters if provided
         if config:
             combined_params.update(config.to_dict())
-            
+
         # Add input parameters if provided
         if input_config:
             combined_params.update(input_config.to_dict())
-            
+
         # Add output parameters if provided
         if output_config:
             combined_params.update(output_config.to_dict())
-            
+
         # Add any additional parameters
         combined_params.update(kwargs)
-        
+
         # Build command
         cmd = self._build_command(**combined_params)
-        
+
         # Run command
         try:
             if callback:
@@ -129,52 +130,59 @@ class ZMapRunner:
                     text=True,
                     bufsize=1,  # Line buffered
                 )
-                
+
                 stdout_data = []
                 stderr_data = []
-                
+
                 # Read and process stdout in real-time
                 if process.stdout:
-                    for line in iter(process.stdout.readline, ''):
+                    for line in iter(process.stdout.readline, ""):
                         if not line:
                             break
                         stdout_data.append(line)
                         callback(line)
-                
+
                 # Read stderr
                 if process.stderr:
-                    for line in iter(process.stderr.readline, ''):
+                    for line in iter(process.stderr.readline, ""):
                         if not line:
                             break
                         stderr_data.append(line)
-                
+
                 process.wait()
-                
-                return process.returncode, ''.join(stdout_data), ''.join(stderr_data)
-                
+
+                return process.returncode, "".join(stdout_data), "".join(stderr_data)
+
             elif capture_output:
                 # Simple execution with output capture
-                result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                result = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
                 return result.returncode, result.stdout, result.stderr
-                
+
             else:
                 # Just run the command without capturing output
-                result = subprocess.run(cmd)
+                result = subprocess.run(cmd, check=False)
                 return result.returncode, "", ""
-                
+
         except subprocess.SubprocessError as e:
             raise ZMapCommandError(command=" ".join(cmd), returncode=-1, stderr=str(e))
-    
-    def scan(self, 
-            config: Optional[ZMapScanConfig] = None,
-            input_config: Optional[ZMapInput] = None,
-            output_config: Optional[ZMapOutput] = None,
-            temp_output_file: bool = False,
-            callback: Optional[Callable[[str], None]] = None,
-            **kwargs) -> List[str]:
+
+    def scan(
+        self,
+        config: ZMapScanConfig | None = None,
+        input_config: ZMapInput | None = None,
+        output_config: ZMapOutput | None = None,
+        temp_output_file: bool = False,
+        callback: Callable[[str], None] | None = None,
+        **kwargs,
+    ) -> list[str]:
         """
         Perform a scan and return the results
-        
+
         Args:
             config: Configuration object
             input_config: Input configuration object
@@ -182,14 +190,14 @@ class ZMapRunner:
             temp_output_file: Whether to use a temporary output file
             callback: Optional callback function for real-time output
             **kwargs: Additional parameters to pass to zmap
-            
+
         Returns:
             List of IP addresses that responded
         """
         # Ensure we have an output configuration
         if output_config is None:
             output_config = ZMapOutput()
-            
+
         # Create temporary output file if requested
         temp_file = None
         try:
@@ -197,42 +205,44 @@ class ZMapRunner:
                 temp_fd, temp_file = tempfile.mkstemp(prefix="zmap_", suffix=".txt")
                 os.close(temp_fd)  # Close the file descriptor
                 output_config.set_output_file(temp_file)
-            
+
             # Set default output module and fields if not specified
             if not output_config.output_module:
-                output_config.set_output_module('csv')
+                output_config.set_output_module("csv")
             if not output_config.output_fields:
-                output_config.set_output_fields('saddr')
-            if not output_config.output_filter and output_config.output_module == 'csv':
+                output_config.set_output_fields("saddr")
+            if not output_config.output_filter and output_config.output_module == "csv":
                 output_config.set_output_filter("success = 1 && repeat = 0")
-                
+
             # Run the scan
             returncode, stdout, stderr = self.run_command(
                 config=config,
                 input_config=input_config,
                 output_config=output_config,
                 callback=callback,
-                **kwargs
+                **kwargs,
             )
-            
+
             if returncode != 0:
                 raise ZMapCommandError(
-                    command=" ".join(self._build_command(
-                        **(config.to_dict() if config else {}),
-                        **(input_config.to_dict() if input_config else {}),
-                        **(output_config.to_dict() if output_config else {}),
-                        **kwargs
-                    )),
+                    command=" ".join(
+                        self._build_command(
+                            **(config.to_dict() if config else {}),
+                            **(input_config.to_dict() if input_config else {}),
+                            **(output_config.to_dict() if output_config else {}),
+                            **kwargs,
+                        ),
+                    ),
                     returncode=returncode,
-                    stderr=stderr
+                    stderr=stderr,
                 )
-            
+
             # Read results from file
-            with open(output_config.output_file, 'r') as f:
+            with open(output_config.output_file) as f:
                 results = [line.strip() for line in f if line.strip()]
-            
+
             return results
-        
+
         finally:
             # Clean up the temporary file if we created one
             if temp_file and os.path.exists(temp_file):
@@ -240,11 +250,11 @@ class ZMapRunner:
                     os.unlink(temp_file)
                 except OSError:
                     pass
-    
-    def get_probe_modules(self) -> List[str]:
+
+    def get_probe_modules(self) -> list[str]:
         """
         Get list of available probe modules
-        
+
         Returns:
             List of available probe module names
         """
@@ -253,9 +263,9 @@ class ZMapRunner:
             raise ZMapCommandError(
                 command=f"{self.zmap_path} --list-probe-modules",
                 returncode=returncode,
-                stderr=stderr
+                stderr=stderr,
             )
-        
+
         # Parse output to extract module names
         modules = []
         for line in stdout.splitlines():
@@ -266,13 +276,13 @@ class ZMapRunner:
             parts = line.split(None, 1)
             if parts:
                 modules.append(parts[0])
-        
+
         return modules
-    
-    def get_output_modules(self) -> List[str]:
+
+    def get_output_modules(self) -> list[str]:
         """
         Get list of available output modules
-        
+
         Returns:
             List of available output module names
         """
@@ -281,9 +291,9 @@ class ZMapRunner:
             raise ZMapCommandError(
                 command=f"{self.zmap_path} --list-output-modules",
                 returncode=returncode,
-                stderr=stderr
+                stderr=stderr,
             )
-        
+
         # Parse output to extract module names
         modules = []
         for line in stdout.splitlines():
@@ -294,31 +304,31 @@ class ZMapRunner:
             parts = line.split(None, 1)
             if parts:
                 modules.append(parts[0])
-        
+
         return modules
-    
-    def get_output_fields(self, probe_module: Optional[str] = None) -> List[str]:
+
+    def get_output_fields(self, probe_module: str | None = None) -> list[str]:
         """
         Get list of available output fields for the specified probe module
-        
+
         Args:
             probe_module: Probe module to get output fields for (optional)
-            
+
         Returns:
             List of available output field names
         """
         cmd = {"list_output_fields": True}
         if probe_module:
             cmd["probe_module"] = probe_module
-            
+
         returncode, stdout, stderr = self.run_command(**cmd)
         if returncode != 0:
             raise ZMapCommandError(
                 command=f"{self.zmap_path} --list-output-fields",
                 returncode=returncode,
-                stderr=stderr
+                stderr=stderr,
             )
-        
+
         # Parse output to extract field names
         fields = []
         for line in stdout.splitlines():
@@ -329,37 +339,40 @@ class ZMapRunner:
             parts = line.split(None, 1)
             if parts:
                 fields.append(parts[0])
-        
+
         return fields
-    
-    def get_interfaces(self) -> List[str]:
+
+    def get_interfaces(self) -> list[str]:
         """
         Get list of available network interfaces
-        
+
         Returns:
             List of available interface names
         """
         try:
             # Using netifaces if available
             import netifaces
+
             return netifaces.interfaces()
         except ImportError:
             # Fallback to socket for basic interface detection
+            import platform
             import socket
             import subprocess
-            import platform
-            
+
             os_name = platform.system().lower()
             interfaces = []
-            
+
             # Get interfaces based on the operating system
             if os_name == "linux" or os_name == "darwin":
                 # Use ifconfig on Unix-like systems
                 try:
-                    proc = subprocess.run(["ifconfig", "-a"], 
-                                         stdout=subprocess.PIPE, 
-                                         stderr=subprocess.PIPE, 
-                                         text=True)
+                    proc = subprocess.run(
+                        ["ifconfig", "-a"],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
                     if proc.returncode == 0:
                         for line in proc.stdout.splitlines():
                             if ": " in line:
@@ -370,10 +383,12 @@ class ZMapRunner:
             elif os_name == "windows":
                 # Use ipconfig on Windows
                 try:
-                    proc = subprocess.run(["ipconfig"], 
-                                         stdout=subprocess.PIPE, 
-                                         stderr=subprocess.PIPE, 
-                                         text=True)
+                    proc = subprocess.run(
+                        ["ipconfig"],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
                     if proc.returncode == 0:
                         for line in proc.stdout.splitlines():
                             if "adapter" in line.lower():
@@ -383,18 +398,18 @@ class ZMapRunner:
                                     interfaces.append(adapter_name)
                 except (subprocess.SubprocessError, FileNotFoundError):
                     pass
-            
+
             # If we still don't have interfaces, try to get the hostname
             if not interfaces:
                 # At minimum, return the hostname interface
                 interfaces.append(socket.gethostname())
-                
+
             return interfaces
-    
+
     def get_version(self) -> str:
         """
         Get ZMap version
-        
+
         Returns:
             Version string
         """
@@ -403,9 +418,9 @@ class ZMapRunner:
             raise ZMapCommandError(
                 command=f"{self.zmap_path} --version",
                 returncode=returncode,
-                stderr=stderr
+                stderr=stderr,
             )
-        
+
         # Extract version from output
         for line in stdout.splitlines():
             line = line.strip()
@@ -414,6 +429,6 @@ class ZMapRunner:
                 for i, part in enumerate(parts):
                     if part.lower() == "version" and i + 1 < len(parts):
                         return parts[i + 1]
-        
+
         # If we couldn't parse the version, return the first line of output
-        return stdout.splitlines()[0].strip() if stdout else "Unknown version" 
+        return stdout.splitlines()[0].strip() if stdout else "Unknown version"

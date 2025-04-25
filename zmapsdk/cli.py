@@ -2,69 +2,85 @@
 Command-line interface for ZMap SDK
 """
 
-import argparse
-import sys
 import logging
-from typing import List, Optional
+import sys
+
+import click
 
 from .api import APIServer
 from .core import ZMap
 
 
-def run_api_server(args: argparse.Namespace) -> int:
-    """Run the API server with the specified options"""
+def setup_logging(verbose: bool) -> None:
+    """Configure logging with the specified verbosity level"""
+    log_level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+
+
+def print_version(ctx: click.Context, _, value: bool) -> None:
+    """Print ZMap version and exit if --version is specified"""
+    if not value or ctx.resilient_parsing:
+        return
     try:
-        # Configure logging
-        log_level = logging.DEBUG if args.verbose else logging.INFO
-        logging.basicConfig(
-            level=log_level,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
-        
-        # Create and run API server
-        server = APIServer(host=args.host, port=args.port)
-        print(f"Starting ZMap SDK API server on http://{args.host}:{args.port}")
-        print(f"API documentation available at http://{args.host}:{args.port}/docs")
-        server.run()
-        
-        return 0
+        zmap = ZMap()
+        version = zmap.get_version()
+        click.echo(f"ZMap version: {version}")
     except Exception as e:
-        print(f"Error starting API server: {e}", file=sys.stderr)
-        if args.verbose:
+        click.echo(f"Warning: Could not detect ZMap version: {e}", err=True)
+    ctx.exit()
+
+
+@click.group()
+@click.option(
+    "--version",
+    is_flag=True,
+    callback=print_version,
+    expose_value=False,
+    is_eager=True,
+    help="Show ZMap version and exit.",
+)
+def cli() -> None:
+    """ZMap SDK - Command-line interface for network scanning operations"""
+    pass
+
+
+@cli.command()
+@click.option("--host", default="127.0.0.1", help="Host address to bind the server to.")
+@click.option(
+    "--port",
+    default=8000,
+    type=int,
+    help="Port number to bind the server to.",
+)
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output.")
+def api(host: str, port: int, verbose: bool) -> None:
+    """Run the ZMap SDK API server.
+
+    This command starts a FastAPI-based HTTP server that provides
+    a REST API interface to ZMap functionality.
+    """
+    try:
+        setup_logging(verbose)
+        server = APIServer(host=host, port=port)
+        click.echo(f"Starting ZMap SDK API server on http://{host}:{port}")
+        click.echo(f"API documentation available at http://{host}:{port}/docs")
+        server.run()
+    except Exception as e:
+        click.echo(f"Error starting API server: {e}", err=True)
+        if verbose:
             import traceback
+
             traceback.print_exc()
-        return 1
+        sys.exit(1)
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main() -> None:
     """Main entry point for the CLI"""
-    parser = argparse.ArgumentParser(description="ZMap SDK command-line interface")
-    subparsers = parser.add_subparsers(dest="command", help="Command to run")
-    
-    # API server command
-    api_parser = subparsers.add_parser("api", help="Run the ZMap SDK API server")
-    api_parser.add_argument("--host", default="127.0.0.1", help="Host to bind to")
-    api_parser.add_argument("--port", type=int, default=8000, help="Port to bind to")
-    api_parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
-    
-    # Parse arguments
-    args = parser.parse_args(argv)
-    
-    # Check ZMap version (for all commands)
-    if args.command:
-        try:
-            zmap = ZMap()
-            print(f"ZMap version: {zmap.get_version()}")
-        except Exception as e:
-            print(f"Warning: Could not detect ZMap version: {e}", file=sys.stderr)
-    
-    # Run appropriate command
-    if args.command == "api":
-        return run_api_server(args)
-    else:
-        parser.print_help()
-        return 0
+    cli(auto_envvar_prefix="ZMAPSDK")
 
 
 if __name__ == "__main__":
-    sys.exit(main()) 
+    main()
