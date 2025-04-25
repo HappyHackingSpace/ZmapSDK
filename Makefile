@@ -9,9 +9,9 @@ format:
 	poetry run black zmapsdk
 
 lint:
-	poetry run isort zmapsdk --check-only --diff .
-	poetry run black zmapsdk --check .
-	poetry run pyupgrade zmapsdk --py311-plus $$(find . -name '*.py')
+	poetry run isort --check-only --diff .
+	poetry run black --check .
+	poetry run pyupgrade --py311-plus $$(find . -name '*.py' -not -path './.venv/*')
 
 test:
 	poetry run pytest tests/ -v
