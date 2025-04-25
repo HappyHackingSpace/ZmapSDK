@@ -6,7 +6,7 @@ import ipaddress
 import os
 from typing import Any
 
-from .exceptions import ZMapInputError
+from zmapsdk.exceptions import ZMapInputError
 
 
 class ZMapInput:

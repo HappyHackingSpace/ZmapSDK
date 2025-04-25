@@ -8,7 +8,7 @@ import os
 from collections.abc import Iterator
 from typing import Any
 
-from .exceptions import ZMapParserError
+from zmapsdk.exceptions import ZMapParserError
 
 
 class ZMapParser:

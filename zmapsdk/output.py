@@ -5,7 +5,7 @@ Output handling module for ZMap SDK
 import os
 from typing import Any
 
-from .exceptions import ZMapOutputError
+from zmapsdk.exceptions import ZMapOutputError
 
 
 class ZMapOutput:

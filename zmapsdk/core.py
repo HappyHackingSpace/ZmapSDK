@@ -5,11 +5,11 @@ Core module for ZMap SDK
 from collections.abc import Callable
 from typing import Any
 
-from .config import ZMapScanConfig
-from .input import ZMapInput
-from .output import ZMapOutput
-from .parser import ZMapParser
-from .runner import ZMapRunner
+from zmapsdk.config import ZMapScanConfig
+from zmapsdk.input import ZMapInput
+from zmapsdk.output import ZMapOutput
+from zmapsdk.parser import ZMapParser
+from zmapsdk.runner import ZMapRunner
 
 
 # Option categories for ZMap configuration

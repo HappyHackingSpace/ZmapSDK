@@ -32,7 +32,7 @@ jobs:
 
       - name: Build package
         run: python -m build
-        
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -43,7 +43,7 @@ jobs:
           release_name: Release v${{ env.VERSION }}
           draft: false
           prerelease: false
-          
+
       - name: Upload Wheel
         uses: actions/upload-release-asset@v1
         env:
@@ -53,7 +53,7 @@ jobs:
           asset_path: ./dist/zmapsdk-${{ env.VERSION }}-py3-none-any.whl
           asset_name: zmapsdk-${{ env.VERSION }}-py3-none-any.whl
           asset_content_type: application/octet-stream
-          
+
       - name: Upload Source
         uses: actions/upload-release-asset@v1
         env:
@@ -63,7 +63,7 @@ jobs:
           asset_path: ./dist/zmapsdk-${{ env.VERSION }}.tar.gz
           asset_name: zmapsdk-${{ env.VERSION }}.tar.gz
           asset_content_type: application/gzip
-          
+
       - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__

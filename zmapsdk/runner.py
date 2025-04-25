@@ -7,10 +7,10 @@ import subprocess
 import tempfile
 from collections.abc import Callable
 
-from .config import ZMapScanConfig
-from .exceptions import ZMapCommandError
-from .input import ZMapInput
-from .output import ZMapOutput
+from zmapsdk.config import ZMapScanConfig
+from zmapsdk.exceptions import ZMapCommandError
+from zmapsdk.input import ZMapInput
+from zmapsdk.output import ZMapOutput
 
 
 class ZMapRunner:

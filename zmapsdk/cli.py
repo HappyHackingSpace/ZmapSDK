@@ -7,8 +7,8 @@ import sys
 
 import click
 
-from .api import APIServer
-from .core import ZMap
+from zmapsdk.api import APIServer
+from zmapsdk.core import ZMap
 
 
 def setup_logging(verbose: bool) -> None:
