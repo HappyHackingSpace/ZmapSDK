@@ -14,7 +14,7 @@ def _get_project_details():
     with open("../pyproject.toml") as pyproject:
         content = pyproject.read()
 
-    return tomlkit.parse(content)["project"]
+    return tomlkit.parse(content)["tool"]["poetry"]
 
 
 pkg_meta = _get_project_details()
