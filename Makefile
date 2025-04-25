@@ -5,13 +5,13 @@ install:
 	pre-commit install
 
 format:
-	poetry run isort .
-	poetry run black .
+	poetry run isort zmapsdk
+	poetry run black zmapsdk
 
 lint:
-	poetry run isort --check-only --diff .
-	poetry run black --check .
-	poetry run pyupgrade --py311-plus $$(find . -name '*.py')
+	poetry run isort zmapsdk --check-only --diff .
+	poetry run black zmapsdk --check .
+	poetry run pyupgrade zmapsdk --py311-plus $$(find . -name '*.py')
 
 test:
 	poetry run pytest tests/ -v
