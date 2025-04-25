@@ -13,9 +13,6 @@ lint:
 	poetry run black --check .
 	poetry run pyupgrade --py311-plus $$(find . -name '*.py' -not -path './.venv/*')
 
-test:
-	poetry run pytest tests/ -v
-
 clean:
 	rm -rf build/
 	rm -rf dist/
