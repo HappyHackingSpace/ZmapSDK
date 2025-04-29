@@ -9,7 +9,7 @@ import os
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 import uvicorn
 from contextlib import asynccontextmanager
-import netifaces
+import psutil
 from .core import ZMap
 
 
@@ -99,7 +99,7 @@ async def get_output_fields(probe_module: Optional[str] = None):
 @app.get("/interfaces", tags=["Info"], response_model=List[str])
 async def get_interfaces():
     """Get available network interfaces"""
-    return netifaces.interfaces()
+    return [iface for iface in psutil.net_if_addrs().keys()]
 
 
 @app.post("/blocklist", tags=["Input"], response_model=FileResponse)

@@ -340,9 +340,9 @@ class ZMapRunner:
             List of available interface names
         """
         try:
-            # Using netifaces if available
-            import netifaces
-            return netifaces.interfaces()
+            # Using psutil to get network interfaces
+            import psutil
+            return [iface for iface in psutil.net_if_addrs().keys()]
         except ImportError:
             # Fallback to socket for basic interface detection
             import socket
