@@ -7,7 +7,7 @@ name = "zmapsdk"
 version = "0.1.2"
 description = "Python SDK for the ZMap network scanner"
 readme = "README.md"
-authors = ["Happy Hacking Space <contact@happyhacking.space>"]
+authors = ["Happy Hacking Space <team@happyhacking.space>"]
 license = "MIT"
 packages = [{include = "zmapsdk"}]
 repository = "https://github.com/HappyHackingSpace/ZmapSDK"
