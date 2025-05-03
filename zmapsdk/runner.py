@@ -352,6 +352,7 @@ class ZMapRunner:
         try:
             # Using psutil to get network interfaces
             import psutil
+
             return [iface for iface in psutil.net_if_addrs().keys()]
         except ImportError:
             # Fallback to socket for basic interface detection
