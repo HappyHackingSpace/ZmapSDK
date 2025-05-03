@@ -1,4 +1,4 @@
-.PHONY: install format lint test clean
+.PHONY: install format lint clean
 
 install:
 	poetry install
