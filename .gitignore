@@ -42,3 +42,6 @@ Thumbs.db
 *.conf
 test_results/
 scan_results/
+
+# docs build
+docs/_build/

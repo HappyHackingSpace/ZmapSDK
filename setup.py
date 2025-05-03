@@ -1,6 +1,6 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
-with open("README.md", "r", encoding="utf-8") as fh:
+with open("README.md", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
@@ -13,8 +13,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "pydantic>=1.8.0,<2.0.0",  # For data validation
-        "fastapi>=0.68.0",         # For REST API
-        "uvicorn>=0.15.0",         # For serving the API
+        "fastapi>=0.68.0",  # For REST API
+        "uvicorn>=0.15.0",  # For serving the API
     ],
     extras_require={
         "dev": [
@@ -43,4 +43,4 @@ setup(
         "Topic :: System :: Networking",
     ],
     python_requires=">=3.7",
-) 
+)

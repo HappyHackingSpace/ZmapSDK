@@ -14,4 +14,4 @@ python -m build
 echo "Installing package..."
 python -m pip install -e .
 
-echo "Build and installation complete!" 
+echo "Build and installation complete!"
