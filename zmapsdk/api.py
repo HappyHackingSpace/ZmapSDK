@@ -1,8 +1,7 @@
 import os
 import tempfile
 from contextlib import asynccontextmanager
-
-import netifaces
+import psutil
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse as StarletteFileResponse
@@ -70,7 +69,7 @@ async def get_output_fields(probe_module: str | None = None):
 @app.get("/interfaces", tags=["Info"], response_model=list[str])
 async def get_interfaces():
     """Get available network interfaces"""
-    return netifaces.interfaces()
+    return [iface for iface in psutil.net_if_addrs().keys()]
 
 
 @app.post("/blocklist", tags=["Input"])
