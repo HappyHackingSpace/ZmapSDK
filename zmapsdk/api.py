@@ -15,7 +15,7 @@ from zmapsdk.schemas import (
     StandardBlocklistRequest,
 )
 
-from .core import ZMap
+from zmapsdk.core import ZMap
 
 # Scan tracking dictionary
 active_scans = {}
