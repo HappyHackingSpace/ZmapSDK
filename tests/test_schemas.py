@@ -7,6 +7,7 @@ def test_minimal_valid_request():
     assert request.target_port is None
     assert request.return_results is False
 
+
 def test_full_valid_request():
     """Test all fields with valid values"""
     request = ScanRequest(
@@ -20,7 +21,7 @@ def test_full_valid_request():
         rate=1000,
         seed=42,
         verbosity=2,
-        return_results=True
+        return_results=True,
     )
     assert request.target_port == 80
     assert request.subnets == ["192.168.1.0/24", "10.0.0.0/8"]

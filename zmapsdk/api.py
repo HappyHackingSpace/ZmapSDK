@@ -5,8 +5,8 @@ from contextlib import asynccontextmanager
 import psutil
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse as StarletteFileResponse
 
+from zmapsdk.core import ZMap
 from zmapsdk.schemas import (
     BlocklistRequest,
     FileResponse,
@@ -14,8 +14,6 @@ from zmapsdk.schemas import (
     ScanResult,
     StandardBlocklistRequest,
 )
-
-from zmapsdk.core import ZMap
 
 # Scan tracking dictionary
 active_scans = {}
